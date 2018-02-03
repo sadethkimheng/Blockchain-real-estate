@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<script src="web3.js/dist/web3.min.js"></script>
+<script type="text/javascript">
+if (typeof web3 !== 'undefined') {
+  web3 = new Web3(web3.currentProvider);
+} else {
+  // set the provider you want from Web3.providers
+  web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+}
+
+var contract_address="0xd81e9d1162c49df51808cd4f1b544d088a3dd07d";
+var contract_abi=[ { "constant": false, "inputs": [ { "name": "_propertyName", "type": "bytes32" }, { "name": "_unitNo", "type": "uint8" }, { "name": "_price", "type": "uint8" }, { "name": "_numRoom", "type": "uint8" }, { "name": "_bathroom", "type": "uint8" }, { "name": "_size", "type": "uint8" }, { "name": "_propertyType", "type": "bytes32" }, { "name": "_propertyDecription", "type": "bytes32" } ], "name": "AddChildContract", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [], "name": "returnAll", "outputs": [ { "name": "", "type": "address[]" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "inputs": [], "payable": false, "stateMutability": "nonpayable", "type": "constructor" } ];
+var child_contract_abi=[ { "constant": true, "inputs": [ { "name": "", "type": "uint256" } ], "name": "prevOwner", "outputs": [ { "name": "", "type": "address" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "bathroom", "outputs": [ { "name": "", "type": "uint8" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "numRoom", "outputs": [ { "name": "", "type": "uint8" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "propertyName", "outputs": [ { "name": "", "type": "bytes32" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [ { "name": "addr", "type": "address" } ], "name": "isOwner", "outputs": [ { "name": "", "type": "bool" } ], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [], "name": "unitNo", "outputs": [ { "name": "", "type": "uint8" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "propertyDecription", "outputs": [ { "name": "", "type": "bytes32" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "owner", "outputs": [ { "name": "", "type": "address" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "returnDataInt", "outputs": [ { "name": "", "type": "uint8" }, { "name": "", "type": "uint8" }, { "name": "", "type": "uint8" }, { "name": "", "type": "uint8" }, { "name": "", "type": "uint8" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [ { "name": "x", "type": "bytes32" } ], "name": "bytes32ToString", "outputs": [ { "name": "", "type": "string" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "size", "outputs": [ { "name": "", "type": "uint8" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "price", "outputs": [ { "name": "", "type": "uint8" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "propertyType", "outputs": [ { "name": "", "type": "bytes32" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "returnDataString", "outputs": [ { "name": "", "type": "string" }, { "name": "", "type": "string" }, { "name": "", "type": "string" }, { "name": "", "type": "address" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "state", "outputs": [ { "name": "", "type": "uint8" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "inputs": [ { "name": "_propertyName", "type": "bytes32" }, { "name": "_unitNo", "type": "uint8" }, { "name": "_price", "type": "uint8" }, { "name": "_numRoom", "type": "uint8" }, { "name": "_bathroom", "type": "uint8" }, { "name": "_size", "type": "uint8" }, { "name": "_propertyType", "type": "bytes32" }, { "name": "_propertyDecription", "type": "bytes32" } ], "payable": false, "stateMutability": "nonpayable", "type": "constructor" }, { "anonymous": false, "inputs": [ { "indexed": false, "name": "identity", "type": "uint8" }, { "indexed": false, "name": "from", "type": "bytes32" }, { "indexed": false, "name": "to", "type": "bytes32" } ], "name": "ChildOwnerTransfered", "type": "event" } ];
+var contract_instance = web3.eth.contract(contract_abi).at(contract_address);
+
+
+web3.eth.defaultAccount=web3.eth.accounts[0]
+function showPropertiyInfo()
+{
+    var propertyName= contract_instance.getPropertyName(1);
+    var unitNo = contract_instance.getUnitNo(1).toNumber();;
+    var price = contract_instance.getPrice(1).toNumber();
+    var numRoom = contract_instance.getNumRoom(1).toNumber();
+    var bathroom = contract_instance.getNumBathroom(1).toNumber();
+    var size = contract_instance.getSize(1).toNumber();
+    var property_type = contract_instance.getPropertyType(1);
+    var propertyDecription= contract_instance.getPropertyDecription(1);
+
+
+    console.log(propertyName);
+    console.log(unitNo);
+    console.log(price);
+    console.log(numRoom);
+    console.log(bathroom);
+    console.log(size);
+    console.log(property_type);
+    console.log(unitNo);
+}
+
+
+</script>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>GARO ESTATE | Home page</title>
+        <meta name="description" content="GARO is a real-estate template">
+        <meta name="author" content="Kimarotec">
+        <meta name="keyword" content="html5, css, bootstrap, property, real-estate theme , bootstrap template">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,700,800' rel='stylesheet' type='text/css'>
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+        <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+        <link rel="stylesheet" href="assets/css/normalize.css">
+        <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+        <link rel="stylesheet" href="assets/css/fontello.css">
+        <link href="assets/fonts/icon-7-stroke/css/pe-icon-7-stroke.css" rel="stylesheet">
+        <link href="assets/fonts/icon-7-stroke/css/helper.css" rel="stylesheet">
+        <link href="assets/css/animate.css" rel="stylesheet" media="screen">
+        <link rel="stylesheet" href="assets/css/bootstrap-select.min.css"> 
+        <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+        <link rel="stylesheet" href="assets/css/icheck.min_all.css">
+        <link rel="stylesheet" href="assets/css/price-range.css">
+        <link rel="stylesheet" href="assets/css/owl.carousel.css">  
+        <link rel="stylesheet" href="assets/css/owl.theme.css">
+        <link rel="stylesheet" href="assets/css/owl.transitions.css">
+        <link rel="stylesheet" href="assets/css/style.css">
+        <link rel="stylesheet" href="assets/css/responsive.css">
+    </head>
+
+
+
+    <body>
+
+        <div id="preloader">
+            <div id="status">&nbsp;</div>
+        </div>
+        <!-- Body content -->
+
+       
+
+        <nav class="navbar navbar-default ">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navigation">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="index.html"><img src="assets/img/logo.png" alt=""></a>
+                </div>
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse yamm" id="navigation">
+                    <div class="button navbar-right">
+                        <button class="navbar-btn nav-button wow bounceInRight login" onclick=" window.open('register.html')" data-wow-delay="0.45s">Register</button>
+                        <button class="navbar-btn nav-button wow fadeInRight login" onclick=" window.open('submit-property.html')" data-wow-delay="0.48s">Login</button>
+                    </div>
+                    <ul class="main-nav nav navbar-nav navbar-right">
+                        <li class="dropdown ymm-sw " data-wow-delay="0.1s">
+                            <a href="index.html">Home</a>
+                        </li>
+                        <li class="wow fadeInDown" data-wow-delay="0.2s"><a class="" href="submit-property.html">Add Property</a></li>
+                        <li class="wow fadeInDown" data-wow-delay="0.2s"><a class="" href="property.html">Property</a></li>
+                        <li class="wow fadeInDown" data-wow-delay="0.2s"><a class="" href="showallproperties.html"> ALL Property</a></li>
+                        <li class="wow fadeInDown" data-wow-delay="0.2s"><a class="" href="index.html#news">News</a></li>
+                        <li class="wow fadeInDown" data-wow-delay="0.5s"><a href="index.html#">Contact</a></li>
+                    </ul>
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+        </nav>
+        <!-- End of nav bar -->
+
+        <div class="slider-area">
+            <div class="slider">
+                <div id="bg-slider" class="owl-carousel owl-theme">
+
+                    <div class="item"><img src="assets/img/slide1/slider-image-1.jpg" alt="GTA V"></div>
+                    <div class="item"><img src="assets/img/slide1/slider-image-2.jpg" alt="The Last of us"></div>
+                    <div class="item"><img src="assets/img/slide1/slider-image-1.jpg" alt="GTA V"></div>
+
+                </div>
+            </div>
+            <div class="slider-content">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 col-sm-12">
+                        <h2>property Searching Just Got So Easy</h2>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eligendi deserunt deleniti, ullam commodi sit ipsam laboriosam velit adipisci quibusdam aliquam teneturo!</p>
+                        <div class="search-form wow pulse" data-wow-delay="0.8s">
+
+                            <form action="" class=" form-inline">
+                              <!--   <button class="btn  toggle-btn" type="button"><i class="fa fa-bars"></i></button> -->
+
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="Key word">
+                                </div>
+                                <div class="form-group">                                   
+                                    <select id="lunchBegins" class="selectpicker" data-live-search="true" data-live-search-style="begins" title="Choose Location"> 
+                                        <option> vKirirom </option> 
+                                        
+                                    </select>
+                                </div>
+                                <div class="form-group">                                     
+                                    <select id="basic" class="selectpicker show-tick form-control">
+                                        <option> -Property type- </option> 
+                                        <option> Borey R </option> 
+                                        <option> Borey V </option> 
+                                        <option> Villa Jasmin </option> 
+
+                                    </select>
+                                </div>
+                                <br>
+                                <br>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="Choose Max price">
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="Choose Min price">
+                                </div>
+                                <button class="btn search-btn" type="submit"><i class="fa fa-search"></i></button>
+
+                                                   
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!--Welcome area -->
+        <div class="row" id="news">
+                    <div class="col-md-10 col-md-offset-1 col-sm-12 text-center page-title">
+                        <!-- /.feature title -->
+                        <h2>News</h2>
+                     <p>Nulla quis dapibus nisl. Suspendisse ultricies commodo arcu nec pretium. Nullam sed arcu ultricies . </p>
+      
+                    </div>
+                </div>
+        <div class="Welcome-area">
+
+            <div class="container" >
+                 
+                <div class="row">
+                    <div class="col-md-12 Welcome-entry  col-sm-12">
+                        <div class="col-md-5 col-md-offset-2 col-sm-6 col-xs-12">
+                            <div class="welcome_text wow fadeInLeft" data-wow-delay="0.3s" data-wow-offset="100">
+                                <div class="row">
+                                    <div class="col-md-10 col-md-offset-1 col-sm-12 text-center page-title">
+                                        <!-- /.feature title -->
+                                        <h2>Real Estate</h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5 col-sm-6 col-xs-12">
+                            <div  class="welcome_services wow fadeInRight" data-wow-delay="0.3s" data-wow-offset="100">
+                                <div class="row">
+                                    <div class="col-xs-6 m-padding">
+                                        <div class="welcome-estate">
+                                            <div class="welcome-icon">
+                                                <i class="pe-7s-home pe-4x"></i>
+                                            </div>
+                                            <h3>Any property</h3>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-6 m-padding">
+                                        <div class="welcome-estate">
+                                            <div class="welcome-icon">
+                                                <i class="pe-7s-users pe-4x"></i>
+                                            </div>
+                                            <h3>More Clients</h3>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-xs-12 text-center">
+                                        <i class="welcome-circle"></i>
+                                    </div>
+
+                                    <div class="col-xs-6 m-padding">
+                                        <div class="welcome-estate">
+                                            <div class="welcome-icon">
+                                                <i class="pe-7s-notebook pe-4x"></i>
+                                            </div>
+                                            <h3>Easy to use</h3>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-6 m-padding">
+                                        <div class="welcome-estate">
+                                            <div class="welcome-icon">
+                                                <i class="pe-7s-help2 pe-4x"></i>
+                                            </div>
+                                            <h3>Any help </h3>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- boy-sale area -->
+        <div class="boy-sale-area">
+            <div class="container">
+                <div class="row">
+
+                    <div class="col-md-6 col-sm-10 col-sm-offset-1 col-md-offset-0 col-xs-12">
+                        <div class="asks-first">
+                            <div class="asks-first-circle">
+                                <span class="fa fa-search"></span>
+                            </div>
+                            <div class="asks-first-info">
+                                <h2>ARE YOU LOOKING FOR A Property?</h2>
+                                <p> varius od lio eget conseq uat blandit, lorem auglue comm lodo nisl no us nibh mas lsa</p>                                        
+                            </div>
+                            <div class="asks-first-arrow">
+                                <a href="properties.html"><span class="fa fa-angle-right"></span></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-10 col-sm-offset-1 col-xs-12 col-md-offset-0">
+                        <div  class="asks-first">
+                            <div class="asks-first-circle">
+                                <span class="fa fa-usd"></span>
+                            </div>
+                            <div class="asks-first-info">
+                                <h2>DO YOU WANT TO SELL A Property?</h2>
+                                <p> varius od lio eget conseq uat blandit, lorem auglue comm lodo nisl no us nibh mas lsa</p>
+                            </div>
+                            <div class="asks-first-arrow">
+                                <a href="properties.html"><span class="fa fa-angle-right"></span></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <p  class="asks-call">QUESTIONS? CALL US  : <span class="strong"> + 855-XXX-XXX</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer area-->
+        <div class="footer-area">
+
+            <div class=" footer">
+                <div class="container">
+                    <div class="row">          
+                    </div></div>
+              </div>
+        </div>
+
+        <script src="assets/js/modernizr-2.6.2.min.js"></script>
+
+        <script src="assets/js/jquery-1.10.2.min.js"></script> 
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+        <script src="assets/js/bootstrap-select.min.js"></script>
+        <script src="assets/js/bootstrap-hover-dropdown.js"></script>
+
+        <script src="assets/js/easypiechart.min.js"></script>
+        <script src="assets/js/jquery.easypiechart.min.js"></script>
+
+        <script src="assets/js/owl.carousel.min.js"></script>
+        <script src="assets/js/wow.js"></script>
+
+        <script src="assets/js/icheck.min.js"></script>
+        <script src="assets/js/price-range.js"></script>
+
+        <script src="assets/js/main.js"></script>
+
+    </body>
+</html>

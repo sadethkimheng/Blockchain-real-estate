@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> 
+<html class="no-js"> <!--<![endif]-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+<script src="web3.js/dist/web3.min.js"></script>
+<script type="text/javascript">
+if (typeof web3 !== 'undefined') {
+  web3 = new Web3(web3.currentProvider);
+} else {
+  // set the provider you want from Web3.providers
+  web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+}
+
+var contract_address="0xd81e9d1162c49df51808cd4f1b544d088a3dd07d";
+var contract_abi=[ { "constant": false, "inputs": [ { "name": "_propertyName", "type": "bytes32" }, { "name": "_unitNo", "type": "uint8" }, { "name": "_price", "type": "uint8" }, { "name": "_numRoom", "type": "uint8" }, { "name": "_bathroom", "type": "uint8" }, { "name": "_size", "type": "uint8" }, { "name": "_propertyType", "type": "bytes32" }, { "name": "_propertyDecription", "type": "bytes32" } ], "name": "AddChildContract", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [], "name": "returnAll", "outputs": [ { "name": "", "type": "address[]" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "inputs": [], "payable": false, "stateMutability": "nonpayable", "type": "constructor" } ];
+var child_contract_abi=[ { "constant": true, "inputs": [ { "name": "", "type": "uint256" } ], "name": "prevOwner", "outputs": [ { "name": "", "type": "address" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "bathroom", "outputs": [ { "name": "", "type": "uint8" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "numRoom", "outputs": [ { "name": "", "type": "uint8" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "propertyName", "outputs": [ { "name": "", "type": "bytes32" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [ { "name": "addr", "type": "address" } ], "name": "isOwner", "outputs": [ { "name": "", "type": "bool" } ], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [], "name": "unitNo", "outputs": [ { "name": "", "type": "uint8" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "propertyDecription", "outputs": [ { "name": "", "type": "bytes32" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "owner", "outputs": [ { "name": "", "type": "address" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "returnDataInt", "outputs": [ { "name": "", "type": "uint8" }, { "name": "", "type": "uint8" }, { "name": "", "type": "uint8" }, { "name": "", "type": "uint8" }, { "name": "", "type": "uint8" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [ { "name": "x", "type": "bytes32" } ], "name": "bytes32ToString", "outputs": [ { "name": "", "type": "string" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "size", "outputs": [ { "name": "", "type": "uint8" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "price", "outputs": [ { "name": "", "type": "uint8" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "propertyType", "outputs": [ { "name": "", "type": "bytes32" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "returnDataString", "outputs": [ { "name": "", "type": "string" }, { "name": "", "type": "string" }, { "name": "", "type": "string" }, { "name": "", "type": "address" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "state", "outputs": [ { "name": "", "type": "uint8" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "inputs": [ { "name": "_propertyName", "type": "bytes32" }, { "name": "_unitNo", "type": "uint8" }, { "name": "_price", "type": "uint8" }, { "name": "_numRoom", "type": "uint8" }, { "name": "_bathroom", "type": "uint8" }, { "name": "_size", "type": "uint8" }, { "name": "_propertyType", "type": "bytes32" }, { "name": "_propertyDecription", "type": "bytes32" } ], "payable": false, "stateMutability": "nonpayable", "type": "constructor" }, { "anonymous": false, "inputs": [ { "indexed": false, "name": "identity", "type": "uint8" }, { "indexed": false, "name": "from", "type": "bytes32" }, { "indexed": false, "name": "to", "type": "bytes32" } ], "name": "ChildOwnerTransfered", "type": "event" } ];
+var contract_instance = web3.eth.contract(contract_abi).at(contract_address);
+
+$(document).ready(function(){
+    var propertyName= contract_instance.returnAll(function(error,result)
+    {
+        if (!error) {
+            var child_contract_instance;
+            for(i=0;i<result.length;i++)
+            {
+                child_contract_instance=web3.eth.contract(child_contract_abi).at(result[i]);
+                var name=child_contract_instance.returnDataString()[0];
+
+                var price =child_contract_instance.returnDataInt()[1].toString();
+                var size= child_contract_instance.returnDataInt()[4].toString();
+
+
+                var propertyBlock="<div class='col-sm-6 col-md-3 p0'>"+
+                            "<div class='box-two proerty-item'>"+
+                                "<div class='item-thumb'>"+
+                                    "<a href='property-1.html' ><img src='assets/img/demo/property-2.jpg'></a>"+
+                                "</div>"+
+                                "<div class='item-entry overflow'>"+
+                                    "<h5><a href='property-1.html' >"+ name+" </a></h5>"+
+                                    "<div class='dot-hr'></div>"+
+                                    "<span class='pull-left'><b>Area :</b> "+size+"</span>"+
+                                    "<span class='proerty-price pull-right'>$ "+price+"</span>"+
+                               "</div>"+
+                            "</div>"+
+                        "</div>";
+                 $("#propertyBlockId").append(propertyBlock);
+            }
+             var propertyBlock1="<div class='col-sm-6 col-md-3 p0'>"+
+                            "<div class='box-tree more-proerty text-center'>"+
+                                "<div class='item-tree-icon'>"+
+                                    "<i class='fa fa-th'></i>"+
+                                "</div>"+
+                                "<div class='more-entry overflow'>"+
+                                    "<h5><a href='property-1.html' >CAN'T DECIDE ? </a></h5>"+
+                                    "<h5 class='tree-sub-ttl'>Show all properties</h5>"+
+                                    "<button class='btn border-btn more-black' value='All properties'>All properties</button>"+
+                                "</div>"+
+                            "</div>"+
+                        "</div>";
+                $("#propertyBlockId").append(propertyBlock1);
+
+            
+        }
+    });
+   
+       
+
+   
+
+});
+</script>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>GARO ESTATE | Property  page</title>
+        <meta name="description" content="GARO is a real-estate template">
+        <meta name="author" content="Kimarotec">
+        <meta name="keyword" content="html5, css, bootstrap, property, real-estate theme , bootstrap template">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,700,800' rel='stylesheet' type='text/css'>
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+        <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+        <link rel="stylesheet" href="assets/css/normalize.css">
+        <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+        <link rel="stylesheet" href="assets/css/fontello.css">
+        <link href="assets/fonts/icon-7-stroke/css/pe-icon-7-stroke.css" rel="stylesheet">
+        <link href="assets/fonts/icon-7-stroke/css/helper.css" rel="stylesheet">
+        <link href="assets/css/animate.css" rel="stylesheet" media="screen">
+        <link rel="stylesheet" href="assets/css/bootstrap-select.min.css"> 
+        <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+        <link rel="stylesheet" href="assets/css/icheck.min_all.css">
+        <link rel="stylesheet" href="assets/css/price-range.css">
+        <link rel="stylesheet" href="assets/css/owl.carousel.css">  
+        <link rel="stylesheet" href="assets/css/owl.theme.css">
+        <link rel="stylesheet" href="assets/css/owl.transitions.css">
+        <link rel="stylesheet" href="assets/css/lightslider.min.css">
+        <link rel="stylesheet" href="assets/css/style.css">
+        <link rel="stylesheet" href="assets/css/responsive.css">
+    </head>
+    <body>
+
+        <div id="preloader">
+            <div id="status">&nbsp;</div>
+        </div>
+        <!-- Body content -->
+   <nav class="navbar navbar-default ">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navigation">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="index.html"><img src="assets/img/logo.png" alt=""></a>
+                </div>
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse yamm" id="navigation">
+                    <div class="button navbar-right">
+                        <button class="navbar-btn nav-button wow bounceInRight login" onclick=" window.open('register.html')" data-wow-delay="0.45s">Register</button>
+                        <button class="navbar-btn nav-button wow fadeInRight login" onclick=" window.open('submit-property.html')" data-wow-delay="0.48s">Login</button>
+                    </div>
+                    <ul class="main-nav nav navbar-nav navbar-right">
+                        <li class="dropdown ymm-sw " data-wow-delay="0.1s">
+                            <a href="index.html">Home</a>
+                        </li>
+                        <li class="wow fadeInDown" data-wow-delay="0.2s"><a class="" href="submit-property.html">Add Property</a></li>
+                        <li class="wow fadeInDown" data-wow-delay="0.2s"><a class="" href="property.html">Property</a></li>
+                        <li class="wow fadeInDown" data-wow-delay="0.2s"><a class="" href="showallproperties.html"> ALL Property</a></li>
+                        <li class="wow fadeInDown" data-wow-delay="0.2s"><a class="" href="index.html#news">News</a></li>
+                        <li class="wow fadeInDown" data-wow-delay="0.5s"><a href="index.html#">Contact</a></li>
+                    </ul>
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+        </nav>
+        <!-- End of nav bar -->
+
+      
+            <div class="container">
+                <div class="row">
+                    <div class="page-head-content text-center">
+                        <h1 class="page-title" >All Properties</h1>  
+                        <hr>             
+                    </div>
+                </div>
+            </div>
+     
+        <!-- End page header -->
+
+       <!-- property area -->
+        <div class="content-area home-area-1 recent-property" style="background-color: #FCFCFC; padding-bottom: 55px;">
+            <div class="container">
+
+                <div class="row">
+                    <div class="proerty-th" id="propertyBlockId">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer area-->
+       <div class="footer-area">
+
+            <div class=" footer">
+                <div class="container">
+                    <div class="row">          
+                    </div></div>
+              </div>
+        </div>
+
+       
+        <script src="assets/js/jquery-1.10.2.min.js"></script>
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+        <script src="assets/js/bootstrap-select.min.js"></script>
+        <script src="assets/js/bootstrap-hover-dropdown.js"></script>
+        <script src="assets/js/easypiechart.min.js"></script>
+        <script src="assets/js/jquery.easypiechart.min.js"></script>
+        <script src="assets/js/owl.carousel.min.js"></script>
+        <script src="assets/js/wow.js"></script>
+        <script src="assets/js/icheck.min.js"></script>
+        <script src="assets/js/price-range.js"></script>
+        <script type="text/javascript" src="assets/js/lightslider.min.js"></script>
+        <script src="assets/js/main.js"></script>
+
+        <script>
+                            $(document).ready(function () {
+
+                                $('#image-gallery').lightSlider({
+                                    gallery: true,
+                                    item: 1,
+                                    thumbItem: 9,
+                                    slideMargin: 0,
+                                    speed: 500,
+                                    auto: true,
+                                    loop: true,
+                                    onSliderLoad: function () {
+                                        $('#image-gallery').removeClass('cS-hidden');
+                                    }
+                                });
+                            });
+        </script>
+
+    </body>
+</html>
